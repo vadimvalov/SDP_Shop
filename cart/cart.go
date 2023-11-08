@@ -62,3 +62,38 @@ func (c *Cart) NotifyObservers() {
 		observer.Update(c)
 	}
 }
+
+type CartDecorator interface {
+	GetCart() *Cart
+	AddToCart(product.Product)
+	RemoveFromCart(product.Product)
+	GetTotalPrice() float64
+}
+
+type TaxDecorator struct {
+	cart    *Cart
+	taxRate float64
+}
+
+func NewTaxDecorator(cart *Cart, taxRate float64) *TaxDecorator {
+	return &TaxDecorator{
+		cart:    cart,
+		taxRate: taxRate,
+	}
+}
+
+func (d *TaxDecorator) GetCart() *Cart {
+	return d.cart
+}
+
+func (d *TaxDecorator) AddToCart(p product.Product) {
+	d.cart.AddToCart(p)
+}
+
+func (d *TaxDecorator) RemoveFromCart(p product.Product) {
+	d.cart.RemoveFromCart(p)
+}
+
+func (d *TaxDecorator) GetTotalPrice() float64 {
+	return d.cart.GetTotalPrice() * (1 + d.taxRate)
+}
