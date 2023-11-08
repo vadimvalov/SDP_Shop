@@ -8,32 +8,6 @@ import (
 )
 
 func main() {
-	//cartInstance := cart.GetCartInstance()
-	//
-	//observer1 := cart.CartObserver{Name: "Dias"}
-	//observer2 := cart.CartObserver{Name: "Vadim"}
-	//cartInstance.Attach(observer1)
-	//cartInstance.Attach(observer2)
-	//
-	//product1 := product.CreateProduct(1, "laptop", 1000.01)
-	//product2 := product.CreateProduct(2, "smartphone", 850.25)
-	//product3 := product.CreateProduct(3, "Motorcycle", 7250.50)
-	//fmt.Printf("%+v\n", product1)
-	//
-	//cartInstance.AddToCart(product1)
-	//cartInstance.AddToCart(product2)
-	//fmt.Printf("\n")
-	//
-	//cartInstance.RemoveFromCart(product2)
-	//fmt.Printf("\n")
-	//
-	//cartInstance.AddToCart(product3)
-	//fmt.Printf("\n")
-	//
-	//fmt.Println("--------------------------")
-	//
-	//totalPrice := cartInstance.GetTotalPrice()
-	//fmt.Printf("Total Price: $%.2f\n\n\n", totalPrice)
 
 	fmt.Println("Добро пожаловать в магазин!")
 
@@ -43,6 +17,7 @@ func main() {
 	observer1 := cart.CartObserver{Name: clientName}
 
 	cartInstance := cart.GetCartInstance()
+	taxDecorator := cart.NewTaxDecorator(cartInstance, 0.12)
 	cartInstance.Attach(observer1)
 
 	products := []product.Product{
@@ -89,7 +64,7 @@ func main() {
 
 				// Добавление выбранного продукта в корзину
 				selectedProduct := products[productChoice-1]
-				cartInstance.AddToCart(selectedProduct)
+				taxDecorator.AddToCart(selectedProduct)
 			}
 
 		case 2:
@@ -97,6 +72,7 @@ func main() {
 
 		case 3:
 			fmt.Println("Вы закрыли программу.")
+			fmt.Printf("Общая сумма к оплате: %f", taxDecorator.GetTotalPrice())
 			os.Exit(0)
 		default:
 			fmt.Println("Неверный выбор. Пожалуйста, выберите от 1 до 3.")
