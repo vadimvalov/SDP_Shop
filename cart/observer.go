@@ -14,6 +14,6 @@ type CartObserver struct {
 
 func (co CartObserver) Update(cart *Cart) {
 	fmt.Println("------------------------------------------------------")
-	fmt.Printf("Покупатель %s: Корзина была обновлена. Общая цена: $%.2f\n", co.Name, cart.totalPrice)
+	fmt.Printf("Покупатель %s: Корзина была обновлена. Общая цена (без налога): $%.2f\n", co.Name, cart.totalPrice)
 	fmt.Println("------------------------------------------------------")
 }
