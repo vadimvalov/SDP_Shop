@@ -45,6 +45,11 @@ func (c *Cart) GetTotalPrice() float64 {
 }
 
 func (c *Cart) Attach(observer Observer) {
+	for _, o := range c.observers {
+		if o == observer {
+			return
+		}
+	}
 	c.observers = append(c.observers, observer)
 }
 
@@ -61,6 +66,10 @@ func (c *Cart) NotifyObservers() {
 	for _, observer := range c.observers {
 		observer.Update(c)
 	}
+}
+
+func (c *Cart) GetContents() []product.Product {
+	return c.contents
 }
 
 type CartDecorator interface {
