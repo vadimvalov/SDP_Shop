@@ -9,11 +9,11 @@ import (
 
 func main() {
 
-	fmt.Println("Добро пожаловать в магазин!")
+	fmt.Println("Добро пожаловать в магазин!\n")
 
 	var clientName string
 	fmt.Print("Введите Ваше имя: ")
-	fmt.Fscan(os.Stdin, &clientName)
+	fmt.Scanln(&clientName)
 	observer1 := cart.CartObserver{Name: clientName}
 
 	cartInstance := cart.GetCartInstance()
@@ -27,13 +27,13 @@ func main() {
 	}
 
 	for {
-		fmt.Println("Выберите действие:")
+		fmt.Println("\nВыберите действие:")
 		fmt.Println("1. Открыть магазин")
 		fmt.Println("2. Открыть корзину")
 		fmt.Println("3. Закрыть")
 
 		var choice int
-		_, err := fmt.Scanf("%d", &choice)
+		_, err := fmt.Scanln(&choice)
 		if err != nil {
 			fmt.Println("Ошибка ввода. Пожалуйста, введите цифру от 1 до 3.")
 			continue
@@ -41,15 +41,18 @@ func main() {
 
 		switch choice {
 		case 1:
+			fmt.Println("\n###################")
 			fmt.Println("Вы открыли магазин.")
+			fmt.Println("###################\n")
 
+			fmt.Println("Содержимое магазина:")
 			for _, p := range products {
 				fmt.Printf("%d. %s - $%.2f\n", p.ID, p.Name, p.Price)
 			}
 			for {
-				fmt.Print("Введите номер продукта для добавления в корзину (или 0 для выхода): ")
+				fmt.Print("\nВведите номер продукта для добавления в корзину (или 0 для выхода): ")
 				var productChoice int
-				_, err := fmt.Scanf("%d", &productChoice)
+				_, err := fmt.Scanln(&productChoice)
 				if err != nil {
 					fmt.Println("Ошибка ввода. Пожалуйста, введите цифру.")
 					continue
@@ -62,17 +65,49 @@ func main() {
 					continue
 				}
 
-				// Добавление выбранного продукта в корзину
 				selectedProduct := products[productChoice-1]
 				taxDecorator.AddToCart(selectedProduct)
 			}
 
 		case 2:
+			fmt.Println("\n###################")
 			fmt.Println("Вы открыли корзину.")
+			fmt.Println("###################")
+			for {
+				contents := cartInstance.GetContents()
+				if len(contents) == 0 {
+					fmt.Println("Корзина пуста.\n")
+					break
+				} else {
+					fmt.Println("\nСодержимое корзины:")
+					for i, item := range contents {
+						fmt.Printf("%d. %s - $%.2f\n", i+1, item.Name, item.Price)
+					}
+					fmt.Print("\nВведите номер товара, который хотите удалить (или 0 для выхода): ")
+					var choice int
+					_, err := fmt.Scanln(&choice)
+					if err != nil {
+						fmt.Println("Ошибка ввода. Пожалуйста, введите цифру.")
+						fmt.Scanln()
+						continue
+					}
+					if choice == 0 {
+						break
+					}
+					if choice < 1 || choice > len(contents) {
+						fmt.Println("Неверный выбор товара.")
+						fmt.Scanln()
+						continue
+					}
+					removedProduct := contents[choice-1]
+					cartInstance.RemoveFromCart(removedProduct)
+				}
+			}
 
 		case 3:
-			fmt.Println("Вы закрыли программу.")
-			fmt.Printf("Общая сумма к оплате: %f", taxDecorator.GetTotalPrice())
+			fmt.Println("\nВы закончили с выбором товаров.")
+			fmt.Printf("Общая сумма к оплате: $%.2f \n", taxDecorator.GetTotalPrice())
+			cartInstance.Detach(observer1)
 			os.Exit(0)
 		default:
 			fmt.Println("Неверный выбор. Пожалуйста, выберите от 1 до 3.")
